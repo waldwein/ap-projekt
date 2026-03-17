@@ -14,6 +14,7 @@ app.use(express.json());
 const supplierRoutes = require("./routes/supplier-routes");
 const reportRoutes = require("./routes/report-routes.js");
 
+app.get("/health", (_req, res) => res.status(200).json({ message: "Server is working" }));
 app.use("/api/suppliers", supplierRoutes);
 app.use("/api/reports", reportRoutes);
 
