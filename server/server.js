@@ -7,6 +7,13 @@ const PORT = process.env.PORT;
 const DB_URL = process.env.DB_URL;
 const app = express();
 
+app.use(cors());
+
+// Routes
+const supplierRoutes = require("./routes/supplier-routes");
+
+app.use("/api/suppliers", supplierRoutes);
+
 mongoose
     .connect(DB_URL)
     .then(() => {
