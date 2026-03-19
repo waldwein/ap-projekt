@@ -11,11 +11,12 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
+const authRoutes = require("./routes/auth-routes.js");
 const supplierRoutes = require("./routes/supplier-routes");
 const reportRoutes = require("./routes/report-routes.js");
 
 app.get("/health", (_req, res) => res.status(200).json({ message: "Server is working" }));
-
+app.use("/api/auth", authRoutes);
 app.use("/api/suppliers", supplierRoutes);
 app.use("/api/reports", reportRoutes);
 
