@@ -102,7 +102,7 @@ export function SuppliersScreen() {
                 keyExtractor={(s) => s._id}
                 renderItem={({ item }) => (
                     <Pressable
-                        onPress={() => navigation.navigate("Lieferantendetails", { supplierId: item._id })}
+                        onPress={() => navigation.navigate("SupplierDatails", { supplierId: item._id })}
                         style={[{ padding: 8, borderBottomWidth: 1 }, !item.isActive && { backgroundColor: "#ccc" }]}
                         disabled={!item.isActive}
                     >

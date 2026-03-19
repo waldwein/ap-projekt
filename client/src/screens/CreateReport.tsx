@@ -58,7 +58,7 @@ export function CreateReport() {
             setCreatedByEmail("");
             setStatus("OK");
 
-            navigation.navigate("Berichte");
+            navigation.navigate("Reports");
         } catch (err: any) {
             setError(err.message ?? "Failed to create report");
         } finally {
