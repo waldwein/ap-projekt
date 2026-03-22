@@ -26,7 +26,7 @@ export function ReportsScreen() {
             setLoading(false);
         }
     }
-    
+
     async function loadSuppliers() {
         try {
             setError(null);
@@ -51,6 +51,22 @@ export function ReportsScreen() {
         } finally {
             setLoading(false);
         }
+    }
+
+    function formatDate(dateString: string) {
+        const date = new Date(dateString);
+
+        if (Number.isNaN(date.getTime())) {
+            return dateString;
+        }
+
+        return new Intl.DateTimeFormat("de-DE", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        }).format(date);
     }
 
     useEffect(() => {
@@ -86,7 +102,7 @@ export function ReportsScreen() {
                         style={{ paddingVertical: 8, borderBottomWidth: 1 }}
                     >
                         <Text style={{ fontWeight: "600" }}>{item.title}</Text>
-                        <Text>{item.createdAt}</Text>
+                        <Text>{formatDate(item.createdAt)}</Text>
                     </Pressable>
                 )}
             />
