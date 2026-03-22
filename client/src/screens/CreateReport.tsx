@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, TextInput, Button, FlatList, Pressable, TouchableOpacity, StyleSheet } from "react-native";
 import { fetchSuppliers, Supplier } from "../api/suppliers";
 import { createReport } from "../api/reports";
-import { useNavigation } from "@react-navigation/core";
+import { useFocusEffect, useNavigation } from "@react-navigation/core";
 
 export function CreateReport() {
     const navigation = useNavigation<any>();
@@ -20,7 +20,17 @@ export function CreateReport() {
     async function loadSuppliers() {
         try {
             setError(null);
-            setSuppliers(await fetchSuppliers());
+
+            const data = await fetchSuppliers();
+            setSuppliers(data);
+
+            setSelectedSupplier((current) => {
+                if (!current) return null;
+
+                const freshSelectedSupplier = data.find((supplier) => supplier._id === current._id);
+
+                return freshSelectedSupplier?.isActive === true ? freshSelectedSupplier : null;
+            });
         } catch (err: any) {
             setError(err.message ?? "Failed to load suppliers");
         }
@@ -66,9 +76,11 @@ export function CreateReport() {
         }
     }
 
-    useEffect(() => {
-        loadSuppliers();
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            loadSuppliers();
+        }, []),
+    );
 
     return (
         <View style={{ padding: 16, gap: 12 }}>
@@ -118,20 +130,26 @@ export function CreateReport() {
                 style={{ maxHeight: 180, borderWidth: 1 }}
                 renderItem={({ item }) => {
                     const selected = selectedSupplier?._id === item._id;
+                    const isSelectable = item.isActive === true;
+
                     return (
                         <Pressable
-                            onPress={() => setSelectedSupplier(item)}
-                            disabled={!!item.isActive}
+                            onPress={() => {
+                                if (isSelectable) setSelectedSupplier(item);
+                            }}
+                            disabled={!isSelectable}
                             style={[
                                 {
                                     padding: 10,
                                     borderBottomWidth: 1,
                                     backgroundColor: selected ? "#eaeaea" : "transparent",
+                                    opacity: isSelectable ? 1 : 0.5,
                                 },
-                                { backgroundColor: !!item.isActive ? "#ccc" : "transparent" },
+                                !isSelectable && { backgroundColor: "#f1f1f1" },
                             ]}
                         >
                             <Text>{item.title}</Text>
+                            {!isSelectable ? <Text>Inaktiv</Text> : null}
                         </Pressable>
                     );
                 }}
