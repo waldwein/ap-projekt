@@ -9,4 +9,6 @@ router.get("/", supplierController.getSuppliers);
 router.get("/:id/", supplierController.getSupplierById);
 router.patch("/:id/", supplierController.updateById);
 
+router.get("/:id/pdf", supplierController.generatePdfById)
+
 module.exports = router;

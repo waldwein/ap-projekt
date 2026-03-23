@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0 40px;
+            color: #333;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px solid #ccc;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 28px;
+            color: #ccc;
+        }
+
+        .section {
+            margin-top: 30px;
+        }
+
+        .section h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #ccc;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Lieferant</h1>
+    </header>
+
+    <div class="section">
+        <h2>Lieferantendetails</h2>
+        <table>
+            <tr>
+                <th>Titel</th>
+                <td>
+                    <%= supplier.title %>
+                </td>
+            </tr>
+            <tr>
+                <th>Beschreibung</th>
+                <td>
+                    <%= supplier.description || "Keine Beschreibung" %>
+                </td>
+            </tr>
+            <tr>
+                <th>E-Mail</th>
+                <td>
+                    <%= supplier.contactEmail || "Kein Kontakt per E-Mail" %>
+                </td>
+            </tr>
+            <tr>
+                <th>Telefon</th>
+                <td>
+                    <%= supplier.phone || "Keine Telefonnummer " %>
+                </td>
+            </tr>
+            <tr>
+                <th>Erstellt am</th>
+                <td>
+                    <%= supplier.createdAt ? new Date(supplier.createdAt).toLocaleString("de-DE") : "" %>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Prüfberichte</h2>
+        <% if (reports && reports.length) { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nr.</th>
+                        <th>Titel</th>
+                        <th>Beschreibung</th>
+                        <th>Erstellt am</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% reports.forEach((r, idx)=> { %>
+                        <tr>
+                            <td>
+                                <%= idx + 1 %>
+                            </td>
+                            <td>
+                                <%= r.title || "" %>
+                            </td>
+                            <td>
+                                <%= r.description || "" %>
+                            </td>
+                            <td>
+                                <%= r.createdAt ? new Date(r.createdAt).toLocaleString("de-DE") : "" %>
+                            </td>
+                            <td>
+                                <%= r.isDamaged ? "Defekt" : "Okay" %>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+            <% } else { %>
+                <p>Keine Berichte vorhanden.</p>
+                <% } %>
+    </div>
+
+    <footer>Erstellt am <%= new Date().toLocaleString("de-DE") %>
+    </footer>
+</body>
+
+</html>

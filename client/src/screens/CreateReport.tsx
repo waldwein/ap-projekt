@@ -1,10 +1,14 @@
+import { View, Text, TextInput, Button, FlatList, Pressable, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, TextInput, Button, FlatList, Pressable, TouchableOpacity, StyleSheet } from "react-native";
+import { useFocusEffect, useNavigation } from "@react-navigation/core";
+import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
+import * as ImagePicker from "expo-image-picker";
+
 import { fetchSuppliers, Supplier } from "../api/suppliers";
 import { createReport } from "../api/reports";
-import { useFocusEffect, useNavigation } from "@react-navigation/core";
+import { API_BASE_URL } from "../config/api";
 
-export function CreateReport() {
+export function CreateReport({ router }: any) {
     const navigation = useNavigation<any>();
     const [suppliers, setSuppliers] = useState<Supplier[]>([]);
     const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
@@ -13,6 +17,7 @@ export function CreateReport() {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [status, setStatus] = useState<"OK" | "DEFECT">("OK");
+    const [images, setImages] = useState([]);
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -36,6 +41,29 @@ export function CreateReport() {
         }
     }
 
+    function openCamera() {}
+
+    async function pickImage() {
+        const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+        if (!permissionResult.granted) {
+            Alert.alert(
+                "Genehmigung erforderlich",
+                "Für den Zugriff auf die Mediathek ist eine Berechtigung erforderlich.",
+            );
+            return;
+        }
+
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ["images"],
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        console.log(result);
+    }
+
     async function onCreate() {
         try {
             setError(null);
@@ -55,20 +83,40 @@ export function CreateReport() {
             }
             setLoading(true);
 
-            await createReport({
-                title,
-                description,
-                supplierId: selectedSupplier._id,
-                createdByEmail,
-                status,
+            const formData = new FormData();
+
+            formData.append("title", title);
+            formData.append("description", description);
+            formData.append("supplierId", selectedSupplier._id);
+            formData.append("createdByEmail", "");
+            formData.append("status", status);
+
+            images.forEach((uri, index) => {
+                formData.append("images", {
+                    uri,
+                    name: `report_${index}.jpg`,
+                    type: "image/jpeg",
+                } as any);
             });
+
+            const res = await fetch(`${API_BASE_URL}/api/reports/`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData),
+            });
+
+            if (!res.ok) throw new Error(`Failed to create report: ${res.status}`);
 
             setTitle("");
             setDescription("");
             setCreatedByEmail("");
             setStatus("OK");
+            setImages([]);
 
-            navigation.navigate("Reports");
+            Alert.alert("Erfolg", "Ihr Prüfbericht wurde erfolgreich erstellt.", [
+                { text: "OK", onPress: () => navigation.navigate("Reports") },
+            ]);
+            setLoading(false);
         } catch (err: any) {
             setError(err.message ?? "Failed to create report");
         } finally {
@@ -119,7 +167,7 @@ export function CreateReport() {
                 </TouchableOpacity>
             </View>
 
-            <Button title="Media" onPress={() => {}} />
+            <Button title="Media" onPress={pickImage} />
 
             <Text style={{ fontWeight: "600" }}>Lieferanten auswählen</Text>
             <Button title="Lieferanten neu laden" onPress={loadSuppliers} />

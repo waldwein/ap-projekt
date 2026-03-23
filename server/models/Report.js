@@ -8,6 +8,8 @@ const reportShema = new mongoose.Schema({
     supplierId: { type: Schema.Types.ObjectId, ref: "Supplier", required: true },
     images: { type: [String], default: [] },
     createdByEmail: { type: String, default: "" },
+    updateNotes: { type: String, default: "" },
+    updatedByEmail: { type: String, default: "" },
     createdAt: { type: String, default: Date() },
 });
 

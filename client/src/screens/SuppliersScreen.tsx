@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { fetchSuppliers, Supplier, createSupplier } from "../api/suppliers";
 import { View, Text, FlatList, Pressable, TextInput, Button } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useAuth } from "../context/AuthContext";
 
 export function SuppliersScreen() {
     const navigation = useNavigation<any>();
-
+    const { user } = useAuth();
     const [suppliers, setSuppliers] = useState<Supplier[]>([]);
 
     const [title, setTitle] = useState("");
@@ -30,9 +31,11 @@ export function SuppliersScreen() {
         }
     }
 
-    useEffect(() => {
-        load();
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            load();
+        }, []),
+    );
 
     async function onCreate() {
         try {
@@ -104,7 +107,7 @@ export function SuppliersScreen() {
                     <Pressable
                         onPress={() => navigation.navigate("SupplierDatails", { supplierId: item._id })}
                         style={[{ padding: 8, borderBottomWidth: 1 }, !item.isActive && { backgroundColor: "#ccc" }]}
-                        disabled={!item.isActive}
+                        disabled={!item.isActive && user?.role === "employee"}
                     >
                         <Text style={{ fontWeight: "600" }}>{item.title}</Text>
                         {item.contactEmail ? <Text>{item.contactEmail}</Text> : null}

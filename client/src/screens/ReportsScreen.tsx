@@ -1,5 +1,5 @@
-import { useNavigation } from "@react-navigation/native";
-import { useEffect, useState } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useCallback, useEffect, useState } from "react";
 import { Text, View, FlatList, Pressable } from "react-native";
 import { fetchReports, fetchReportsBySupplierId, Report } from "../api/reports";
 import { fetchSuppliers, Supplier } from "../api/suppliers";
@@ -69,10 +69,12 @@ export function ReportsScreen() {
         }).format(date);
     }
 
-    useEffect(() => {
-        load();
-        loadSuppliers();
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            load();
+            loadSuppliers();
+        }, []),
+    );
 
     return (
         <View style={{ padding: 16, gap: 12 }}>
@@ -98,7 +100,9 @@ export function ReportsScreen() {
                 keyExtractor={(r) => r._id}
                 renderItem={({ item }) => (
                     <Pressable
-                        onPress={() => navigation.navigate("ReportDetails", { reportId: item._id })}
+                        onPress={() =>
+                            navigation.navigate("ReportDetails", { reportId: item._id, supplierId: item.supplierId })
+                        }
                         style={{ paddingVertical: 8, borderBottomWidth: 1 }}
                     >
                         <Text style={{ fontWeight: "600" }}>{item.title}</Text>
