@@ -11,9 +11,10 @@ Mobile application for digital goods inspection, including documentation, image 
 
 ## Tech Stack
 - React Native
-- NestJS
-- PostgreSQL
 - TypeScript
+- MongoDB
+- Express
+- Node.js
 
 ## My Contribution
 - Implementation of mobile features
